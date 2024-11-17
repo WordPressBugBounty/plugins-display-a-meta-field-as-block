@@ -5,7 +5,7 @@ Tags:              custom field, meta field, ACF custom field, block, Gutenberg
 Requires PHP:      7.4
 Requires at least: 6.5
 Tested up to:      6.7
-Stable tag:        1.3.1
+Stable tag:        1.3.2
 License:           GPL-3.0
 License URI:       https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -316,9 +316,16 @@ There is a chance that your meta value contains some HTML tags or HTML attribute
 
 2. Prefix and suffix settings
 
-3. Enable `Show in REST API` ACF setting
+3. Prefix and suffix style
+
+4. Enable `Show in REST API` ACF setting
 
 == Changelog ==
+
+= 1.3.2 =
+*Release Date - 17 November 2024*
+
+* Improved - Updated translation text for compatibility with WordPress 6.7
 
 = 1.3.1 =
 *Release Date - 28 October 2024*

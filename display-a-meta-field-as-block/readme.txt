@@ -5,7 +5,7 @@ Tags:              custom field, meta field, ACF custom field, block, Gutenberg
 Requires PHP:      7.4
 Requires at least: 6.5
 Tested up to:      6.7
-Stable tag:        1.3.2
+Stable tag:        1.3.3
 License:           GPL-3.0
 License URI:       https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -321,6 +321,13 @@ There is a chance that your meta value contains some HTML tags or HTML attribute
 4. Enable `Show in REST API` ACF setting
 
 == Changelog ==
+
+= 1.3.3 =
+*Release Date - 06 January 2025*
+
+* Fixed    - (MFB Pro) ACF Relationship field and custom post types
+* Improved - (MFB Pro) Add the plugin version to the premium style file
+* Updated - Update Freemius SDK 2.10.1
 
 = 1.3.2 =
 *Release Date - 17 November 2024*

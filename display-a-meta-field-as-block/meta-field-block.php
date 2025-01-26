@@ -6,7 +6,7 @@
  * Description:       Display a custom field as a block on the front end. It supports custom fields for posts, terms, and users. It supports ACF fields explicitly.
  * Requires at least: 6.5
  * Requires PHP:      7.4
- * Version:           1.3.3
+ * Version:           1.3.4
  * Author:            Phi Phan
  * Author URI:        https://metafieldblock.com?utm_source=MFB&utm_campaign=MFB+visit+site&utm_medium=link&utm_content=Author+URI
  * License:           GPL-3.0
@@ -35,7 +35,7 @@ if ( !class_exists( MetaFieldBlock::class ) ) {
          *
          * @var String
          */
-        protected $version = '1.3.3';
+        protected $version = '1.3.4';
 
         /**
          * Components

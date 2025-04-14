@@ -669,13 +669,15 @@ if ( ! class_exists( ACFFields::class ) ) :
 				$off_text = _x( 'No', 'The display text for the "false" value of the true_false ACF field type', 'display-a-meta-field-as-block' );
 			}
 
-			if ( $value ) {
-				$field_value = apply_filters( 'meta_field_block_acf_field_true_false_on_text', $on_text, $field, $value, $post_id );
-			} else {
-				$field_value = apply_filters( 'meta_field_block_acf_field_true_false_off_text', $off_text, $field, $value, $post_id );
-			}
+			// Deprecated filters.
+			$on_text  = apply_filters( 'meta_field_block_acf_field_true_false_on_text', $on_text, $field, $value, $post_id );
+			$off_text = apply_filters( 'meta_field_block_acf_field_true_false_off_text', $off_text, $field, $value, $post_id );
 
-			return $field_value;
+			// New fitlers.
+			$on_text  = apply_filters( 'meta_field_block_true_false_on_text', $on_text, $field['name'] ?? '', $field, $post_id, $value );
+			$off_text = apply_filters( 'meta_field_block_true_false_off_text', $off_text, $field['name'] ?? '', $field, $post_id, $value );
+
+			return $field_value ? $on_text : $off_text;
 		}
 
 		/**
@@ -690,8 +692,8 @@ if ( ! class_exists( ACFFields::class ) ) :
 		public function format_field_checkbox( $value, $field, $post_id, $raw_value ) {
 			$field_value = $value;
 
-			// Allow customizing the separator.
-			$separator = apply_filters( 'meta_field_block_acf_field_choice_item_separator', ', ', $value, $field, $post_id );
+			// Get item separator.
+			$separator = $this->choice_field_separator( $field, $post_id, $value );
 
 			if ( $value ) {
 				if ( is_array( $value ) ) {
@@ -723,6 +725,18 @@ if ( ! class_exists( ACFFields::class ) ) :
 			}
 
 			return $field_value;
+		}
+
+		/**
+		 * Separator for choice field
+		 *
+		 * @param array $field
+		 * @param int   $post_id
+		 * @param mixed $value
+		 * @return string
+		 */
+		private function choice_field_separator( $field, $post_id, $value ) {
+			return apply_filters( 'meta_field_block_acf_field_choice_item_separator', ', ', $field['name'] ?? '', $field, $post_id, $value );
 		}
 
 		/**
@@ -773,8 +787,8 @@ if ( ! class_exists( ACFFields::class ) ) :
 		public function format_field_select( $value, $field, $post_id, $raw_value ) {
 			$field_value = $value;
 
-			// Allow customizing the separator.
-			$separator = apply_filters( 'meta_field_block_acf_field_choice_item_separator', ', ', $value, $field, $post_id );
+			// Get item separator.
+			$separator = $this->choice_field_separator( $field, $post_id, $value );
 
 			$value_array = [];
 			if ( is_array( $value ) ) {

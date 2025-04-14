@@ -93,6 +93,7 @@
       "width": true,
       "__experimentalDefaultControls": false
     },
+    "shadow": true,
     "typography": {
       "fontSize": true,
       "lineHeight": true,

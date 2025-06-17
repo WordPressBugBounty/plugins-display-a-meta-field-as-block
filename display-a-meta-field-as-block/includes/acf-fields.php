@@ -498,7 +498,11 @@ if ( ! class_exists( ACFFields::class ) ) :
 						if ( $term ) {
 							$term_object = get_term( $term );
 							if ( $term_object && $term_object instanceof \WP_Term ) {
-								return sprintf( '<a class="term-link" href="%1$s">%2$s</a>', get_term_link( $term ), $term_object->name );
+								$term_link = get_term_link( $term_object );
+								if ( is_wp_error( $term_link ) ) {
+									return '';
+								}
+								return sprintf( '<a class="term-link" href="%1$s">%2$s</a>', $term_link, $term_object->name );
 							}
 						} else {
 							return '';

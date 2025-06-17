@@ -5,11 +5,11 @@ Tags:              custom field, meta field, ACF custom field, block, Gutenberg
 Requires PHP:      7.4
 Requires at least: 6.7
 Tested up to:      6.8
-Stable tag:        1.4.2
+Stable tag:        1.4.3
 License:           GPL-3.0
 License URI:       https://www.gnu.org/licenses/gpl-3.0.html
 
-Display a custom field as a block on the front end. It supports custom fields for posts, terms, and users. It supports ACF, Meta Box fields explicitly
+Display a custom field as a block on the frontend. Supports custom fields for posts, terms, and users. Officially supports ACF, Meta Box.
 
 == Description ==
 
@@ -26,7 +26,7 @@ An edge case where this block is really helpful is when you need to get the corr
 = Links =
 
 * [Website](https://metafieldblock.com?utm_source=wp.org&utm_campaign=readme&utm_medium=link&utm_content=Website)
-* [How it works](https://metafieldblock.com/how-it-works?utm_source=wp.org&utm_campaign=readme&utm_medium=link&utm_content=Website%20How%20it%20works)
+* [How it works & tutorials](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?utm_source=wp.org&utm_campaign=readme&utm_medium=link&utm_content=Website%20How%20it%20works)
 * [MFB PRO](https://metafieldblock.com/pro?utm_source=wp.org&utm_campaign=readme&utm_medium=link&utm_content=MFB%20Pro)
 
 = What is the HTML output of a custom field? =
@@ -45,7 +45,7 @@ The HTML output of a custom field on the front end depends on the context of the
 
 3. Image type - The HTML output is from the [wp_get_attachment_image](https://developer.wordpress.org/reference/functions/wp_get_attachment_image/) function. The image size is from the Preview Size setting.
 
-4. True / False type - The HML output is `Yes` if the value is `true`, and `No` if the value is `false`. Below is the code snippet to change these text values:
+4. True / False type - The HTML output is `Yes` if the value is `true`, and `No` if the value is `false`. Below is the code snippet to change these text values:
 
         add_filter( 'meta_field_block_true_false_on_text', function ( $on_text, $field_name, $field, $post_id, $value ) {
           return 'Yep';
@@ -346,6 +346,7 @@ The main features of MFB PRO are:
 * Display the Meta Box single image fields as [an image block](https://youtu.be/bWLIv6CeV-8).
 * Display the Meta Box image list fields as [a gallery using grid or masonry layouts or as a carousel of images](https://youtu.be/bWLIv6CeV-8), similar to the ACF Gallery field.
 * Display the Meta Box File single input field as a video block, an image block, or a button.
+* Display a group field as a details block, and display a repeater or cloned group as an accordion.
 * Set a single image sub-field (ACF Image or Meta Box Image) as the background image of a group field.
 * [Display custom fields from a specific post, term or user](https://metafieldblock.com/docs/other-item-fields.mp4)
 
@@ -420,6 +421,14 @@ If you don't want to sanitize the content at all, use this hook `apply_filters( 
 4. Enable `Show in REST API` ACF setting
 
 == Changelog ==
+
+= 1.4.3 =
+*Release Date - 17 June 2025*
+
+* Improved - Added error handling for `get_term_link` to prevent string casting errors.
+* Added    - (MFB Pro) Allowed binding a text field as the label for a button created from a URL field.
+* Added    - (MFB Pro) Displaying a group field as a details block, and displaying a repeater or cloned group as an accordion.
+* Improved - (MFB Pro) Allowed selecting a field path for sub-field blocks instead of entering it manually.
 
 = 1.4.2 =
 *Release Date - 12 May 2025*

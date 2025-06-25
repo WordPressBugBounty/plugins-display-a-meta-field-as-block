@@ -1,6 +1,6 @@
 === Meta Field Block ===
 Contributors: Mr2P, freemius
-Donate link:       https://metafieldblock.com?utm_source=wp.org&utm_campaign=readme&utm_medium=link&utm_content=MFB+Donate
+Donate link:       https://metafieldblock.com/pro?utm_source=wp.org&utm_campaign=readme&utm_medium=link&utm_content=MFB+Donate
 Tags:              custom field, meta field, ACF custom field, block, Gutenberg
 Requires PHP:      7.4
 Requires at least: 6.7
@@ -49,11 +49,11 @@ The HTML output of a custom field on the front end depends on the context of the
 
         add_filter( 'meta_field_block_true_false_on_text', function ( $on_text, $field_name, $field, $post_id, $value ) {
           return 'Yep';
-        }, 10, 4 );
+        }, 10, 5 );
 
         add_filter( 'meta_field_block_true_false_off_text', function ( $off_text, $field_name, $field, $post_id, $value ) {
           return 'Noop';
-        }, 10, 4 );
+        }, 10, 5 );
 
 5. Checkbox / Select type - The HTML output is:
 
@@ -63,7 +63,7 @@ The HTML output of a custom field on the front end depends on the context of the
 
         add_filter( 'meta_field_block_acf_field_choice_item_separator', function ( $separator, $field_name, $field, $post_id, $value ) {
           return ' | ';
-        }, 10, 4 );
+        }, 10, 5 );
 
 6. Radio button / Button group type - The HTML output can be either `value` or `label`, depending on the return format of the field.
 
@@ -362,7 +362,9 @@ Please check out my other plugins if you're interested:
 - **[Counting Number Block](https://wordpress.org/plugins/counting-number-block)** - A block to display numbers with a counting effect
 - **[Better YouTube Embed Block](https://wordpress.org/plugins/better-youtube-embed-block)** - A block to solve the performance issue with embedded YouTube videos. It can also embed multiple videos and playlists.
 
-The plugin is developed using @wordpress/create-block.
+The plugin is built using @wordpress/create-block.
+**MFB** is developed using only native Gutenberg features to keep it fast and lightweight.
+**MFB Pro** uses **[SwiperJS]("https://swiperjs.com/)** for the carousel layout. However, if you don’t use the carousel layout, the script and styles won’t be loaded on your page.
 
 == Installation ==
 

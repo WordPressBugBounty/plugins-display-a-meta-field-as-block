@@ -1,11 +1,11 @@
 === Meta Field Block ===
 Contributors: Mr2P, freemius
 Donate link:       https://metafieldblock.com/pro?utm_source=wp.org&utm_campaign=readme&utm_medium=link&utm_content=MFB+Donate
-Tags:              custom field, meta field, ACF custom field, block, Gutenberg
+Tags:              custom field, meta field, ACF block, block, ACF field
 Requires PHP:      7.4
 Requires at least: 6.7
 Tested up to:      6.8
-Stable tag:        1.4.3
+Stable tag:        1.4.5
 License:           GPL-3.0
 License URI:       https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -22,6 +22,10 @@ You can also display custom fields created by the [Advanced Custom Fields](https
 This plugin also provides developer-friendly hook APIs that allow you to easily customize the output of the block, display complex data type fields, or use the block as a placeholder to display any kind of content with `object_id` and `object_type` as context parameters.
 
 An edge case where this block is really helpful is when you need to get the correct `post_id` in your shortcode when you use it in a Query Loop. In that case, you can set the field type as `dynamic` and input your shortcode in the field name. The block will display it correctly on both the front end and the editor. Alternatively, if you only want to see the preview of your shortcode in the editor, you can also use this block as a better version of the `core/shortcode`.
+
+To quickly learn how this block displays custom fields, watch the short guide (for MFB version 1.3.4) by Paul Charlton from WPTuts. The video focuses on the Advanced Custom Fields plugin, but you can use a similar approach to display fields from other frameworks like Meta Box.
+
+[youtube https://www.youtube.com/watch?v=-WusSXKaNt4]
 
 = Links =
 
@@ -316,7 +320,7 @@ To display simple data type fields for posts, terms, and users, you only need th
 
 Below are some video tutorials that demonstrate how MFB Pro can help you display complex fields:
 
-= How to build a post template without coding =
+= How to build a post template to display dynamic data without coding =
 
 [youtube https://www.youtube.com/watch?v=5VePClgZmlQ]
 
@@ -330,25 +334,25 @@ Below are some video tutorials that demonstrate how MFB Pro can help you display
 
 The main features of MFB PRO are:
 
-* [Display settings fields](https://metafieldblock.com/docs/setting-fields.mp4).
-* Display ACF advanced layout fields: [Group](https://metafieldblock.com/docs/group-fields.mp4), [Repeater](https://metafieldblock.com/docs/repeater-fields.mp4), and Flexible content.
-* Display ACF Repeater fields in a carousel layout, which is useful for displaying banner sliders.
-* [Display ACF Relationship and Post Object fields as a Query Loop](https://metafieldblock.com/docs/query-fields.mp4).
-* Display the ACF Image field as a core image block.
-* Display the ACF Gallery field as a gallery using [grid or masonry layouts](https://metafieldblock.com/docs/gallery-field.mp4) or as a carousel of images.
-* Display the ACF File field as a [video block](https://metafieldblock.com/docs/file-video-field.mp4), an image block, a button block, or a link.
+* [Display settings fields](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-settings-fields).
+* Display ACF advanced layout fields: [Group](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-group-fields), [Repeater](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-repeater-fields-as-list-grid-carousel), and Flexible content.
+* Display ACF Repeater fields in a carousel layout, which is useful for [displaying banner sliders](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-repeater-as-banner-slider).
+* Display ACF Repeater fields in an accordion layout, which is useful for [displaying FAQ pages](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-repeater-as-accordion).
+* [Display ACF Relationship and Post Object fields as a Query Loop](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-relationship-fields).
+* [Display the ACF Image field as a core image block](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-image-fields).
+* Display the ACF Gallery field as an image gallery using [grid, masonry, or carousel layouts](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-gallery-fields-as-grid-masonry-carousel).
+* [Display the ACF File field as a video block, an image block, a button block, or a link](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-file-fields).
 * Display the ACF Link field as a button block.
-* Display the [ACF URL](https://metafieldblock.com/docs/url-fields.mp4) field as an image block, a button block, or a link.
-* Display the [ACF Email, and ACF File](https://metafieldblock.com/docs/email-file-fields.mp4) fields as a button block or a link.
+* [Display the ACF URL field as an image block, a button block, or a link](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-url-fields).
+* [Display the ACF Email field as a button block or a link](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-email-fields).
 * Display the Meta Box Group field, similar to the ACF Group field.
 * Display the Meta Box Cloneable Group field as a repeater block, similar to the ACF Repeater field. Supports row, stack, grid or carousel layouts.
 * Display the Meta Box Post field as a Query Loop.
-* Display the Meta Box single image fields as [an image block](https://youtu.be/bWLIv6CeV-8).
-* Display the Meta Box image list fields as [a gallery using grid or masonry layouts or as a carousel of images](https://youtu.be/bWLIv6CeV-8), similar to the ACF Gallery field.
+* [Display the Meta Box single image field as an image block, and the image list field as an image gallery using grid, masonry, or carousel layouts](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-meta-box-image-fields-as-image-grid-masonry-carousel).
 * Display the Meta Box File single input field as a video block, an image block, or a button.
 * Display a group field as a details block, and display a repeater or cloned group as an accordion.
 * Set a single image sub-field (ACF Image or Meta Box Image) as the background image of a group field.
-* [Display custom fields from a specific post, term or user](https://metafieldblock.com/docs/other-item-fields.mp4)
+* [Display custom fields from a specific post, term or user](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-custom-fields-from-other-post).
 
 If this plugin is useful for you, please do a quick review and [rate it](https://wordpress.org/support/plugin/display-a-meta-field-as-block/reviews/#new-post) on WordPress.org to help us spread the word. I would very much appreciate it.
 
@@ -423,6 +427,21 @@ If you don't want to sanitize the content at all, use this hook `apply_filters( 
 4. Enable `Show in REST API` ACF setting
 
 == Changelog ==
+
+= 1.4.5 =
+*Release Date - 10 September 2025*
+
+* Improved - Refactored the code to support additional add-ons.
+* Fixed    - Double formatting issue on ACF textarea fields.
+
+= 1.4.4 =
+*Release Date - 24 June 2025*
+
+* Fixed    – (MFB Pro) Bound ACF True/False field to the "open by default" attribute of the details block.
+* Fixed    – (MFB Pro) Corrected preview styling for single carousel effects.
+* Improved – (MFB Pro) Removed unnecessary values when selecting paths for SFB, background image, video, or overlay color.
+* Improved – (MFB Pro) Added support for selecting sub-paths when binding a text field as the label for a bound button.
+* Improved – (MFB Pro) Added support for selecting sub-paths when binding a URL field as the URL for a bound image.
 
 = 1.4.3 =
 *Release Date - 17 June 2025*

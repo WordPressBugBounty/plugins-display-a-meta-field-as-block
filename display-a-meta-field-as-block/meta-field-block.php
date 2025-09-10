@@ -3,10 +3,10 @@
 /**
  * Plugin Name:       Meta Field Block
  * Plugin URI:        https://metafieldblock.com?utm_source=MFB&utm_campaign=MFB+visit+site&utm_medium=link&utm_content=Plugin+URI
- * Description:       Display a custom field as a block on the front end. It supports custom fields for posts, terms, and users. It supports ACF fields explicitly.
+ * Description:       Display a custom field as a block on the frontend. Supports custom fields for posts, terms, and users. Officially supports ACF, Meta Box, and all text-based meta fields.
  * Requires at least: 6.7
  * Requires PHP:      7.4
- * Version:           1.4.3
+ * Version:           1.4.5
  * Author:            Phi Phan
  * Author URI:        https://metafieldblock.com?utm_source=MFB&utm_campaign=MFB+visit+site&utm_medium=link&utm_content=Author+URI
  * License:           GPL-3.0
@@ -24,7 +24,7 @@ if ( function_exists( __NAMESPACE__ . '\\mfb_fs' ) ) {
     return;
 }
 // Include Freemius functions.
-require_once dirname( __FILE__ ) . '/freemius.php';
+require_once __DIR__ . '/freemius.php';
 if ( !class_exists( MetaFieldBlock::class ) ) {
     /**
      * The main class
@@ -35,7 +35,7 @@ if ( !class_exists( MetaFieldBlock::class ) ) {
          *
          * @var String
          */
-        protected $version = '1.4.3';
+        protected $version = '1.4.5';
 
         /**
          * Components
@@ -110,24 +110,19 @@ if ( !class_exists( MetaFieldBlock::class ) ) {
          */
         public function register_components() {
             // Load & register core components.
-            $this->include_file( 'includes/rest-fields.php' );
-            $this->include_file( 'includes/acf-fields.php' );
-            $this->include_file( 'includes/mb-fields.php' );
-            $this->include_file( 'includes/dynamic-field.php' );
-            $this->include_file( 'includes/freemius-config.php' );
-            $this->include_file( 'includes/settings.php' );
-            $core_components = [
-                RestFields::class,
-                ACFFields::class,
-                MBFields::class,
-                DynamicField::class,
-                Settings::class,
-                FreemiusConfig::class
+            $components = [
+                'includes/rest-fields.php'     => RestFields::class,
+                'includes/acf-fields.php'      => ACFFields::class,
+                'includes/mb-fields.php'       => MBFields::class,
+                'includes/dynamic-field.php'   => DynamicField::class,
+                'includes/settings.php'        => Settings::class,
+                'includes/freemius-config.php' => FreemiusConfig::class,
             ];
-            $components = apply_filters( 'meta_field_block_get_components', $core_components );
-            foreach ( $components as $component ) {
-                $this->register_component( $component );
+            foreach ( $components as $file => $classname ) {
+                $this->register_component( $file, $classname );
             }
+            // Register additional components.
+            do_action( 'mfb/register_components', $this );
         }
 
         /**
@@ -152,7 +147,7 @@ if ( !class_exists( MetaFieldBlock::class ) ) {
             // Register the block.
             add_action( 'init', [$this, 'register_block'] );
             // Save version and trigger upgraded hook.
-            add_action( 'admin_menu', [$this, 'version_upgrade'], 1 );
+            add_action( 'plugins_loaded', [$this, 'version_upgrade'], 1 );
             // Flush the server cache.
             add_action(
                 'save_post',
@@ -346,14 +341,12 @@ if ( !class_exists( MetaFieldBlock::class ) ) {
             if ( in_array( $object_type, ['term', 'user'], true ) ) {
                 // Get queried object id.
                 $object_id = get_queried_object_id();
+            } elseif ( isset( $block->context['postId'] ) ) {
+                // Get value from the context.
+                $object_id = $block->context['postId'];
             } else {
-                if ( isset( $block->context['postId'] ) ) {
-                    // Get value from the context.
-                    $object_id = $block->context['postId'];
-                } else {
-                    // Fallback to the current queried object id.
-                    $object_id = get_queried_object_id();
-                }
+                // Fallback to the current queried object id.
+                $object_id = get_queried_object_id();
             }
             return apply_filters(
                 'meta_field_block_get_object_id',
@@ -484,11 +477,14 @@ if ( !class_exists( MetaFieldBlock::class ) ) {
         /**
          * Register component
          *
+         * @param string $file The file path of the component.
          * @param string $classname The class name of the component.
          * @return void
          */
-        public function register_component( $classname ) {
-            $this->components[$classname] = new $classname($this);
+        public function register_component( $file, $classname ) {
+            if ( $this->include_file( $file ) ) {
+                $this->components[$classname] = new $classname($this);
+            }
         }
 
         /**
@@ -515,7 +511,7 @@ if ( !class_exists( MetaFieldBlock::class ) ) {
         }
 
         /**
-         * Retrn file path for file or folder.
+         * Return file path for file or folder.
          *
          * @param string $path file path.
          * @return string
@@ -531,7 +527,15 @@ if ( !class_exists( MetaFieldBlock::class ) ) {
          * @return mixed
          */
         public function include_file( $path ) {
-            return include_once $this->get_file_path( $path );
+            $file_path = $this->get_file_path( $path );
+            if ( !file_exists( $file_path ) ) {
+                if ( $this->is_debug_mode() ) {
+                    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+                    error_log( "[MFB]: Missing file: {$file_path}" );
+                }
+                return false;
+            }
+            return include_once $file_path;
         }
 
         /**

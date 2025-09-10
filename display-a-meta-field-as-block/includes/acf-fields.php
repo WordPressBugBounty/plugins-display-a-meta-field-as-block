@@ -136,6 +136,9 @@ if ( ! class_exists( ACFFields::class ) ) :
 			// Format it.
 			$field_object['value'] = acf_format_value( $raw_value, $object_id_with_type, $field_object );
 
+			// Mark it as formatted.
+			$field_object['is_formatted'] = true;
+
 			return [
 				'value' => $this->render_field( $field_object['value'] ?? '', $object_id, $field_object, $raw_value, $object_type ),
 				'field' => $field,
@@ -293,10 +296,8 @@ if ( ! class_exists( ACFFields::class ) ) :
 				$format_func = 'format_field_' . $field_type;
 				if ( is_callable( [ $this, $format_func ] ) ) {
 					$field_value = $this->{$format_func}( $value, $field, $post_id, $raw_value );
-				} else {
-					if ( in_array( $field_type, [ 'date_picker', 'time_picker', 'date_time_picker' ], true ) ) {
-						$field_value = $this->format_field_datetime( $value, $field, $post_id, $raw_value );
-					}
+				} elseif ( in_array( $field_type, [ 'date_picker', 'time_picker', 'date_time_picker' ], true ) ) {
+					$field_value = $this->format_field_datetime( $value, $field, $post_id, $raw_value );
 				}
 
 				$field_value = is_array( $field_value ) || is_object( $field_value ) ? '<code><em>' . __( 'This data type is not supported! Please contact the author for help.', 'display-a-meta-field-as-block' ) . '</em></code>' : $field_value;
@@ -403,12 +404,10 @@ if ( ! class_exists( ACFFields::class ) ) :
 
 			if ( count( $value_markup ) === 0 ) {
 				$field_value = '';
+			} elseif ( count( $value_markup ) > 1 ) {
+				$field_value = '<ul><li>' . implode( '</li><li>', $value_markup ) . '</li></ul>';
 			} else {
-				if ( count( $value_markup ) > 1 ) {
-					$field_value = '<ul><li>' . implode( '</li><li>', $value_markup ) . '</li></ul>';
-				} else {
-					$field_value = $value_markup[0];
-				}
+				$field_value = $value_markup[0];
 			}
 
 			return $field_value;
@@ -439,12 +438,10 @@ if ( ! class_exists( ACFFields::class ) ) :
 
 			if ( count( $post_array_markup ) === 0 ) {
 				$field_value = '';
+			} elseif ( count( $post_array_markup ) > 1 ) {
+				$field_value = '<ul><li>' . implode( '</li><li>', $post_array_markup ) . '</li></ul>';
 			} else {
-				if ( count( $post_array_markup ) > 1 ) {
-					$field_value = '<ul><li>' . implode( '</li><li>', $post_array_markup ) . '</li></ul>';
-				} else {
-					$field_value = $post_array_markup[0];
-				}
+				$field_value = $post_array_markup[0];
 			}
 
 			return $field_value;
@@ -467,7 +464,7 @@ if ( ! class_exists( ACFFields::class ) ) :
 			$post_array_markup = array_filter(
 				array_map(
 					function ( $post ) {
-							return $this->get_post_link( $post );
+						return $this->get_post_link( $post );
 					},
 					$post_array
 				)
@@ -514,12 +511,10 @@ if ( ! class_exists( ACFFields::class ) ) :
 
 			if ( count( $term_array_markup ) === 0 ) {
 				$field_value = '';
+			} elseif ( count( $term_array_markup ) > 1 ) {
+				$field_value = '<ul><li>' . implode( '</li><li>', $term_array_markup ) . '</li></ul>';
 			} else {
-				if ( count( $term_array_markup ) > 1 ) {
-					$field_value = '<ul><li>' . implode( '</li><li>', $term_array_markup ) . '</li></ul>';
-				} else {
-					$field_value = $term_array_markup[0];
-				}
+				$field_value = $term_array_markup[0];
 			}
 
 			return $field_value;
@@ -552,7 +547,6 @@ if ( ! class_exists( ACFFields::class ) ) :
 			$user_array_markup = array_filter(
 				array_map(
 					function ( $user ) {
-						$user_link         = '';
 						$user_id           = 0;
 						$user_display_name = '';
 
@@ -582,12 +576,10 @@ if ( ! class_exists( ACFFields::class ) ) :
 
 			if ( count( $user_array_markup ) === 0 ) {
 				$field_value = '';
+			} elseif ( count( $user_array_markup ) > 1 ) {
+				$field_value = '<ul><li>' . implode( '</li><li>', $user_array_markup ) . '</li></ul>';
 			} else {
-				if ( count( $user_array_markup ) > 1 ) {
-					$field_value = '<ul><li>' . implode( '</li><li>', $user_array_markup ) . '</li></ul>';
-				} else {
-					$field_value = $user_array_markup[0];
-				}
+				$field_value = $user_array_markup[0];
 			}
 
 			return $field_value;
@@ -847,6 +839,10 @@ if ( ! class_exists( ACFFields::class ) ) :
 		 * @return string
 		 */
 		public function format_field_textarea( $value, $field, $post_id, $raw_value ) {
+			if ( $field['is_formatted'] ?? false ) {
+				return $value;
+			}
+
 			if ( $value ) {
 				if ( 'wpautop' === ( $field['new_lines'] ?? '' ) ) {
 					$field_value = wpautop( $value );
@@ -872,6 +868,10 @@ if ( ! class_exists( ACFFields::class ) ) :
 		 * @return string
 		 */
 		public function format_field_wysiwyg( $value, $field, $post_id, $raw_value ) {
+			if ( $field['is_formatted'] ?? false ) {
+				return $value;
+			}
+
 			if ( $value ) {
 				$field_value = apply_filters( 'acf_the_content', $value );
 
@@ -899,4 +899,3 @@ if ( ! class_exists( ACFFields::class ) ) :
 		}
 	}
 endif;
-

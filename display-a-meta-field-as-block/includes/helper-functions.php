@@ -81,7 +81,7 @@ if ( ! function_exists( __NAMESPACE__ . '\meta_field_block_get_block_markup' ) )
 			$prefix = $attributes['prefix'] ?? '';
 			if ( ! $prefix && ( $attributes['labelAsPrefix'] ?? false ) ) {
 				$field_label = $args['label'] ?? '';
-				$prefix      = $field_label ? $field_label : meta_field_block_get_field_label( $attributes, $post_id, $object_type );
+				$prefix      = $field_label ? $field_label : meta_field_block_get_field_label( $attributes, $block, $post_id, $object_type );
 			}
 			$prefix = $prefix ? sprintf( '<%2$s class="prefix"%3$s>%1$s</%2$s>', wp_kses( $prefix, $allowed_html_tags ), $inner_tag, meta_field_block_build_prefix_suffix_style( $attributes['prefixSettings'] ?? '' ) ) : '';
 
@@ -105,15 +105,21 @@ if ( ! function_exists( __NAMESPACE__ . '\meta_field_block_get_field_label' ) ) 
 	 * Get field label.
 	 *
 	 * @param  array      $attributes Block attributes.
+	 * @param  WP_Block   $block      Block instance.
 	 * @param  int|string $post_id    Post Id.
 	 * @param  string     $object_type Object type.
 	 *
 	 * @return string Returns the field label.
 	 */
-	function meta_field_block_get_field_label( $attributes, $post_id, $object_type ) {
-		$field_label = '';
+	function meta_field_block_get_field_label( $attributes, $block, $post_id, $object_type ) {
+		// Allow third-party plugins to alter the field label.
+		$field_label = apply_filters( 'meta_field_block_get_field_label', '', $attributes, $block, $post_id, $object_type );
 
-		$field_type = $attributes['fieldType'] ?? 'meta';
+		if ( $field_label ) {
+			return $field_label;
+		}
+
+		$field_type = $attributes['fieldType'] ?? '';
 		$field_name = $attributes['fieldName'] ?? '';
 
 		if ( 'acf' === $field_type ) {

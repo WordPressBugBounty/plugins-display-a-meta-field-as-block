@@ -118,7 +118,10 @@
     "postId",
     "postType",
     "queryId",
-    "query"
+    "query",
+    "termId",
+    "taxonomy",
+    "termQuery"
   ],
   "textdomain": "display-a-meta-field-as-block",
   "editorScript": "file:./index.js",

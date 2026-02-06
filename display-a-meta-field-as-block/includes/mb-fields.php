@@ -60,11 +60,44 @@ if ( ! class_exists( MBFields::class ) ) :
 		 * @return void
 		 */
 		public function run() {
+			// Get block content.
+			add_filter( '_meta_field_block_get_block_content_by_provider', [ $this, 'get_block_content' ], 10, 7 );
+
 			// Register custom rest fields.
 			add_action( 'rest_api_init', [ $this, 'register_rest_field' ] );
 
 			// Format special fields for rest.
 			add_filter( '_mb_field_format_value_for_rest', [ $this, 'format_value_for_rest' ], 10, 5 );
+		}
+
+		/**
+		 * Get the block content for the field
+		 *
+		 * @param string   $content
+		 * @param string   $field_name
+		 * @param string   $field_type
+		 * @param mixed    $object_id
+		 * @param string   $object_type
+		 * @param array    $attributes
+		 * @param WP_Block $block
+		 *
+		 * @return mixed
+		 */
+		public function get_block_content( $content, $field_name, $field_type, $object_id, $object_type, $attributes, $block ) {
+			if ( 'mb' !== $field_type ) {
+				return $content;
+			}
+
+			if ( function_exists( 'rwmb_get_value' ) ) {
+				$block_value = $this->get_field_value( $field_name, $object_id, $object_type, $attributes, $block );
+
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+				$content = apply_filters( '_meta_field_block_render_dynamic_block', $block_value['value'] ?? '', $block_value, $object_id, $object_type, $attributes, $block );
+			} else {
+				$content = '<code><em>' . __( 'This data type requires the Meta Box plugin installed and activated!', 'display-a-meta-field-as-block' ) . '</em></code>';
+			}
+
+			return $content;
 		}
 
 		/**
@@ -102,6 +135,7 @@ if ( ! class_exists( MBFields::class ) ) :
 				return $values;
 			}
 
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 			$object_type = apply_filters( '_meta_field_block_mb_field_get_rest_object_type', 'post', $request, $object );
 			$object_id   = $object['id'] ?? 0;
 
@@ -141,6 +175,7 @@ if ( ! class_exists( MBFields::class ) ) :
 					$field['option_name'] = $object_id;
 				}
 
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 				$values[ $field['id'] ] = apply_filters( '_mb_field_format_value_for_rest', $value, $object_id, $field, $value, $args );
 			}
 
@@ -180,6 +215,7 @@ if ( ! class_exists( MBFields::class ) ) :
 						// Update field.
 						$field['fields'][ $sub_index ] = $subfield;
 
+						// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 						$value_item[ $subfield['id'] ] = apply_filters( '_mb_field_format_value_for_rest', $subvalue, $object_id, $subfield, $subvalue, $args );
 					}
 					$value[ $index ] = $value_item;
@@ -195,6 +231,7 @@ if ( ! class_exists( MBFields::class ) ) :
 					// Update field.
 					$field['fields'][ $index ] = $subfield;
 
+					// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 					$value[ $subfield['id'] ] = apply_filters( '_mb_field_format_value_for_rest', $subvalue, $object_id, $subfield, $subvalue, $args );
 				}
 			}
@@ -220,7 +257,7 @@ if ( ! class_exists( MBFields::class ) ) :
 		 * @return mixed
 		 */
 		public function format_value_for_rest( $value_formatted, $post_id, $field, $raw_value, $args ) {
-			$simple_value_formatted = $this->render_field( $value_formatted, $post_id, $field, $raw_value, $args );
+			$simple_value_formatted = $this->render_field( $value_formatted, $post_id, $field, $raw_value, $args['object_type'] ?? '', $args );
 
 			if ( $field['clone'] ?? false ) {
 				$separator = $this->get_clone_field_separator( $field, $post_id, $value_formatted );
@@ -250,10 +287,12 @@ if ( ! class_exists( MBFields::class ) ) :
 		 * @param string     $field_name
 		 * @param int/string $object_id
 		 * @param string     $object_type
+		 * @param array      $attributes
+		 * @param WP_Block   $block
 		 *
 		 * @return mixed
 		 */
-		public function get_field_value( $field_name, $object_id, $object_type = '' ) {
+		public function get_field_value( $field_name, $object_id, $object_type, $attributes, $block ) {
 			$args  = $object_type ? [ 'object_type' => $object_type ] : '';
 			$field = rwmb_get_field_settings( $field_name, $args, $object_id );
 
@@ -280,7 +319,17 @@ if ( ! class_exists( MBFields::class ) ) :
 			}
 
 			return [
-				'value' => $this->render_field( $value, $object_id, $field, $value, $object_type ),
+				'value' => $this->render_field(
+					$value,
+					$object_id,
+					$field,
+					$value,
+					$object_type,
+					[
+						'attributes' => $attributes,
+						'block'      => $block,
+					]
+				),
 				'field' => $field,
 			];
 		}
@@ -293,13 +342,15 @@ if ( ! class_exists( MBFields::class ) ) :
 		 * @param array  $field
 		 * @param mixed  $raw_value
 		 * @param string $object_type
+		 * @param array  $args
+		 *
 		 * @return void
 		 */
-		public function render_field( $value, $object_id, $field, $raw_value, $object_type = '' ) {
+		public function render_field( $value, $object_id, $field, $raw_value, $object_type = '', $args = [] ) {
 			// Get the value for rendering.
 			$field_value = $this->render_mb_field( $value, $object_id, $field, $raw_value );
 
-			return apply_filters( 'meta_field_block_get_mb_field', $field_value, $object_id, $field, $raw_value, $object_type );
+			return apply_filters( 'meta_field_block_get_mb_field', $field_value, $object_id, $field, $raw_value, $object_type, $args );
 		}
 
 		/**
@@ -319,10 +370,8 @@ if ( ! class_exists( MBFields::class ) ) :
 				$format_func = 'format_field_' . $field_type;
 				if ( is_callable( [ $this, $format_func ] ) ) {
 					$field_value = $this->{$format_func}( $value, $field, $post_id, $raw_value );
-				} else {
-					if ( in_array( $field_type, [ 'date', 'datetime' ], true ) ) {
+				} elseif ( in_array( $field_type, [ 'date', 'datetime' ], true ) ) {
 						$field_value = $this->format_field_datetime( $value, $field, $post_id, $raw_value );
-					}
 				}
 
 				if ( ( $field['clone'] ?? false ) && ! ( in_array( $field_type, $this->ignored_clone_fields, true ) ) ) {
@@ -590,12 +639,10 @@ if ( ! class_exists( MBFields::class ) ) :
 
 			if ( count( $post_array_markup ) === 0 ) {
 				$field_value = '';
-			} else {
-				if ( count( $post_array_markup ) > 1 ) {
+			} elseif ( count( $post_array_markup ) > 1 ) {
 					$field_value = '<ul><li>' . implode( '</li><li>', $post_array_markup ) . '</li></ul>';
-				} else {
-					$field_value = $post_array_markup[0];
-				}
+			} else {
+				$field_value = $post_array_markup[0];
 			}
 
 			return $field_value;
@@ -676,12 +723,10 @@ if ( ! class_exists( MBFields::class ) ) :
 
 			if ( count( $term_array_markup ) === 0 ) {
 				$field_value = '';
-			} else {
-				if ( count( $term_array_markup ) > 1 ) {
+			} elseif ( count( $term_array_markup ) > 1 ) {
 					$field_value = '<ul><li>' . implode( '</li><li>', $term_array_markup ) . '</li></ul>';
-				} else {
-					$field_value = $term_array_markup[0];
-				}
+			} else {
+				$field_value = $term_array_markup[0];
 			}
 
 			return $field_value;
@@ -748,12 +793,10 @@ if ( ! class_exists( MBFields::class ) ) :
 
 			if ( count( $user_array_markup ) === 0 ) {
 				$field_value = '';
-			} else {
-				if ( count( $user_array_markup ) > 1 ) {
+			} elseif ( count( $user_array_markup ) > 1 ) {
 					$field_value = '<ul><li>' . implode( '</li><li>', $user_array_markup ) . '</li></ul>';
-				} else {
-					$field_value = $user_array_markup[0];
-				}
+			} else {
+				$field_value = $user_array_markup[0];
 			}
 
 			return $field_value;
@@ -1106,10 +1149,8 @@ if ( ! class_exists( MBFields::class ) ) :
 				if ( $refine_value ) {
 					$field_value = '<span class="value-item">' . implode( '</span>' . $separator . '<span class="value-item">', $refine_value ) . '</span>';
 				}
-			} else {
-				if ( $display_label && isset( $options[ $field_value ] ) ) {
+			} elseif ( $display_label && isset( $options[ $field_value ] ) ) {
 					$field_value = $options[ $field_value ];
-				}
 			}
 
 			return $field_value;

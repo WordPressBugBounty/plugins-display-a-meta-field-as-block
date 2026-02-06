@@ -21,7 +21,7 @@ if ( !function_exists( 'mfb_fs' ) ) {
                 define( 'WP_FS__PRODUCT_14507_MULTISITE', true );
             }
             // Include Freemius SDK.
-            require_once dirname( __FILE__ ) . '/freemius/start.php';
+            require_once __DIR__ . '/vendor/freemius/start.php';
             $first_path = 'options-general.php?page=mfb-settings&tab=getting-started';
             $parent_slug = 'options-general.php';
             if ( fs_is_network_admin() ) {
@@ -100,7 +100,8 @@ if ( !function_exists( 'mfb_fs_custom_connect_message_on_update' ) ) {
         $freemius_link
     ) {
         return sprintf(
-            __( 'Hey %1$s' ) . ',<br>' . __( 'Thank you for using %2$s. We invite you to help the %2$s community by opting in to share some data about your usage of %2$s with us. This will help us make this plugin more compatible with your site and better at doing what you need it to. You can opt out at any time. And if you skip this, that\'s okay! %2$s will still work just fine.', 'display-a-meta-field-as-block' ),
+            // translators: %s: the first name of the current user.
+            __( 'Hey %1$s', 'display-a-meta-field-as-block' ) . ',<br>' . __( 'Thank you for using %2$s. We invite you to help the %2$s community by opting in to share some data about your usage of %2$s with us. This will help us make this plugin more compatible with your site and better at doing what you need it to. You can opt out at any time. And if you skip this, that\'s okay! %2$s will still work just fine.', 'display-a-meta-field-as-block' ),
             $user_first_name,
             '<b>' . $plugin_title . '</b>',
             '<b>' . $user_login . '</b>',

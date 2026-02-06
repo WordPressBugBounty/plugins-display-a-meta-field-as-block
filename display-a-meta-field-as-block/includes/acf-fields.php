@@ -23,6 +23,9 @@ if ( ! class_exists( ACFFields::class ) ) :
 		 * @return void
 		 */
 		public function run() {
+			// Get block content.
+			add_filter( '_meta_field_block_get_block_content_by_provider', [ $this, 'get_block_content' ], 10, 7 );
+
 			// Don't format fields for rest.
 			add_filter( 'acf/settings/rest_api_format', [ $this, 'api_format' ] );
 
@@ -31,6 +34,36 @@ if ( ! class_exists( ACFFields::class ) ) :
 
 			// Flush the server cache for ACF fields.
 			add_action( 'save_post', [ $this, 'flush_acf_cache' ], 10, 2 );
+		}
+
+		/**
+		 * Get the block content for the field
+		 *
+		 * @param string   $content
+		 * @param string   $field_name
+		 * @param string   $field_type
+		 * @param mixed    $object_id
+		 * @param string   $object_type
+		 * @param array    $attributes
+		 * @param WP_Block $block
+		 *
+		 * @return mixed
+		 */
+		public function get_block_content( $content, $field_name, $field_type, $object_id, $object_type, $attributes, $block ) {
+			if ( 'acf' !== $field_type ) {
+				return $content;
+			}
+
+			if ( function_exists( 'get_field_object' ) ) {
+				$block_value = $this->get_field_value( $field_name, $object_id, $object_type, $attributes, $block );
+
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+				$content = apply_filters( '_meta_field_block_render_dynamic_block', $block_value['value'] ?? '', $block_value, $object_id, $object_type, $attributes, $block );
+			} else {
+				$content = '<code><em>' . __( 'This data type requires the ACF plugin installed and activated!', 'display-a-meta-field-as-block' ) . '</em></code>';
+			}
+
+			return $content;
 		}
 
 		/**
@@ -76,10 +109,12 @@ if ( ! class_exists( ACFFields::class ) ) :
 		 * @param string     $field_name
 		 * @param int/string $object_id
 		 * @param string     $object_type
+		 * @param array      $attributes
+		 * @param WP_Block   $block
 		 *
 		 * @return mixed
 		 */
-		public function get_field_value( $field_name, $object_id, $object_type = '' ) {
+		public function get_field_value( $field_name, $object_id, $object_type, $attributes, $block ) {
 			// Get the id with object type.
 			$object_id_with_type = $this->get_object_id_with_type( $object_id, $object_type, $field_name );
 
@@ -140,7 +175,17 @@ if ( ! class_exists( ACFFields::class ) ) :
 			$field_object['is_formatted'] = true;
 
 			return [
-				'value' => $this->render_field( $field_object['value'] ?? '', $object_id, $field_object, $raw_value, $object_type ),
+				'value' => $this->render_field(
+					$field_object['value'] ?? '',
+					$object_id,
+					$field_object,
+					$raw_value,
+					$object_type,
+					[
+						'attributes' => $attributes,
+						'block'      => $block,
+					]
+				),
 				'field' => $field,
 			];
 		}
@@ -227,6 +272,7 @@ if ( ! class_exists( ACFFields::class ) ) :
 						'post_type'              => 'acf-field',
 						'orderby'                => 'menu_order',
 						'order'                  => 'ASC',
+						// phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.SuppressFilters_suppress_filters
 						'suppress_filters'       => true, // DO NOT allow third-party to modify the query.
 						'cache_results'          => true,
 						'update_post_meta_cache' => false,
@@ -270,13 +316,15 @@ if ( ! class_exists( ACFFields::class ) ) :
 		 * @param array  $field
 		 * @param mixed  $raw_value
 		 * @param string $object_type
+		 * @param array  $args
+		 *
 		 * @return void
 		 */
-		public function render_field( $value, $object_id, $field, $raw_value, $object_type = '' ) {
+		public function render_field( $value, $object_id, $field, $raw_value, $object_type = '', $args = [] ) {
 			// Get the value for rendering.
 			$field_value = $this->render_acf_field( $value, $object_id, $field, $raw_value );
 
-			return apply_filters( 'meta_field_block_get_acf_field', $field_value, $object_id, $field, $raw_value, $object_type );
+			return apply_filters( 'meta_field_block_get_acf_field', $field_value, $object_id, $field, $raw_value, $object_type, $args );
 		}
 
 		/**
@@ -873,6 +921,7 @@ if ( ! class_exists( ACFFields::class ) ) :
 			}
 
 			if ( $value ) {
+				// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 				$field_value = apply_filters( 'acf_the_content', $value );
 
 				// Follow the_content function in /wp-includes/post-template.php.

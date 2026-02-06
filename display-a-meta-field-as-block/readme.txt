@@ -3,9 +3,9 @@ Contributors: Mr2P, freemius
 Donate link:       https://metafieldblock.com/pro?utm_source=wp.org&utm_campaign=readme&utm_medium=link&utm_content=MFB+Donate
 Tags:              custom field, meta field, ACF block, block, ACF field
 Requires PHP:      7.4
-Requires at least: 6.7
-Tested up to:      6.8
-Stable tag:        1.4.5
+Requires at least: 6.9
+Tested up to:      6.9
+Stable tag:        1.5.0
 License:           GPL-3.0
 License URI:       https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -345,6 +345,7 @@ The main features of MFB PRO are:
 * Display the ACF Link field as a button block.
 * [Display the ACF URL field as an image block, a button block, or a link](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-url-fields).
 * [Display the ACF Email field as a button block or a link](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-email-fields).
+* Display the ACF Google Map field.
 * Display the Meta Box Group field, similar to the ACF Group field.
 * Display the Meta Box Cloneable Group field as a repeater block, similar to the ACF Repeater field. Supports row, stack, grid or carousel layouts.
 * Display the Meta Box Post field as a Query Loop.
@@ -353,6 +354,8 @@ The main features of MFB PRO are:
 * Display a group field as a details block, and display a repeater or cloned group as an accordion.
 * Set a single image sub-field (ACF Image or Meta Box Image) as the background image of a group field.
 * [Display custom fields from a specific post, term or user](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-custom-fields-from-other-post).
+* Display a taxonomy field as a Terms Query block.
+* Display a repeater or cloned group field as an core/accordion block.
 
 If this plugin is useful for you, please do a quick review and [rate it](https://wordpress.org/support/plugin/display-a-meta-field-as-block/reviews/#new-post) on WordPress.org to help us spread the word. I would very much appreciate it.
 
@@ -372,7 +375,7 @@ The plugin is built using @wordpress/create-block.
 
 == Installation ==
 
-1. Upload the plugin files to the `/wp-content/plugins/meta-field-block` directory, or install the plugin through the WordPress plugins screen directly.
+1. Upload the plugin files to the `/wp-content/plugins` directory, or install the plugin through the WordPress plugins screen directly.
 2. Activate the plugin through the 'Plugins' screen in WordPress
 
 
@@ -427,6 +430,30 @@ If you don't want to sanitize the content at all, use this hook `apply_filters( 
 4. Enable `Show in REST API` ACF setting
 
 == Changelog ==
+
+= 1.5.0 =
+*Release Date - 15 January 2026*
+
+* Added      – Display subfields for the Terms Query block.
+* Added      – (MFB Pro) Display taxonomy fields as a Terms Query.
+* Improved   – Handle field context based on the loop context.
+* Improved   - Display WYSIWYG fields in block format to prevent margin collapsing.
+* Improved   – (MFB Pro) Display a repeater field as an accordion block.
+* Improved   – (MFB Pro) Handle carousel previews inside repeater fields.
+* Improved   – (MFB Pro) Add a "link to term" option for taxonomy's image fields.
+* Improved   – (MFB Pro) Use native block binding when rendering "video" fields as core/video blocks.
+* Improved   – (MFB Pro) Add display settings to the MFB Query Loop variation.
+* Improved   – Moved Freemius into the vendor directory.
+* Refactored – Improved the code to support more providers.
+
+= 1.4.6 =
+*Release Date - 18 November 2025*
+
+* Improved - Removed `_source` names from the suggested list for Secure Custom Field (SCF)
+* Improved - Passed block settings to the `meta_field_block_get_acf_field` and `meta_field_block_get_mb_field` hooks.
+* Added    - (MFB Pro) Support for displaying ACF Google Map fields.
+* Improved - (MFB Pro) Support for displaying taxonomy fields as a list of term names.
+* Improved - (MFB Pro) Improved handling of carousel scripts when hosts or cache plugins defer or delay the script.
 
 = 1.4.5 =
 *Release Date - 10 September 2025*

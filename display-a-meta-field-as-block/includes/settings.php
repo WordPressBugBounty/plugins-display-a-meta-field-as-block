@@ -76,6 +76,9 @@ if ( ! class_exists( Settings::class ) ) :
 			// Add the settings page link to plugin list screen.
 			add_action( 'plugin_action_links_' . plugin_basename( MFB_ROOT_FILE ), [ $this, 'plugin_settings_links' ] );
 
+			// Register setting fields.
+			add_action( 'init', [ $this, 'register_setting_fields' ] );
+
 			// Add rest api endpoint to query docs.
 			add_action( 'rest_api_init', [ $this, 'register_docs_endpoint' ] );
 
@@ -181,6 +184,9 @@ if ( ! class_exists( Settings::class ) ) :
 					true
 				);
 
+				// For debuging.
+				$this->the_plugin_instance->enqueue_debug_information( 'mfb-settings' );
+
 				wp_set_script_translations( 'mfb-settings', 'display-a-meta-field-as-block' );
 
 				// Enqueue style.
@@ -247,6 +253,24 @@ if ( ! class_exists( Settings::class ) ) :
 		public function plugin_settings_links( $links ): array {
 			array_unshift( $links, sprintf( '<a href="%1$s">%2$s</a>', admin_url( $this->first_path ), esc_html__( 'Settings', 'display-a-meta-field-as-block' ) ) );
 			return $links;
+		}
+
+		/**
+		 * Register custom setting fields
+		 *
+		 * @return void
+		 */
+		public function register_setting_fields() {
+			register_setting(
+				'mfb',
+				'mfb_enable_strict_mode',
+				[
+					'type'              => 'boolean',
+					'show_in_rest'      => true,
+					'default'           => false,
+					'sanitize_callback' => 'rest_sanitize_boolean',
+				]
+			);
 		}
 
 		/**

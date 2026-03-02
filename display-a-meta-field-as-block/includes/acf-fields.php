@@ -171,12 +171,20 @@ if ( ! class_exists( ACFFields::class ) ) :
 			// Format it.
 			$field_object['value'] = acf_format_value( $raw_value, $object_id_with_type, $field_object );
 
+			// If strict mode is on, validate the value to protect private fields.
+			if ( $this->the_plugin_instance->get_component( MetaVisibility::class )->has_strict_mode() ) {
+				$field_group = acf_get_field_group( $field_object['parent'] ?? 0 );
+				if ( ! $field_group || empty( $field_group['show_in_rest'] ) ) {
+					$field_object['value'] = '';
+				}
+			}
+
 			// Mark it as formatted.
 			$field_object['is_formatted'] = true;
 
 			return [
 				'value' => $this->render_field(
-					$field_object['value'] ?? '',
+					$field_object['value'],
 					$object_id,
 					$field_object,
 					$raw_value,

@@ -318,9 +318,16 @@ if ( ! class_exists( MBFields::class ) ) :
 				$field['clone_tags']      = $tags;
 			}
 
+			// If strict mode is on, validate the value to protect private fields.
+			if ( $this->the_plugin_instance->get_component( MetaVisibility::class )->has_strict_mode() ) {
+				if ( $field && ! empty( $field['hide_from_rest'] ) ) {
+					$field['value'] = '';
+				}
+			}
+
 			return [
 				'value' => $this->render_field(
-					$value,
+					$field['value'],
 					$object_id,
 					$field,
 					$value,

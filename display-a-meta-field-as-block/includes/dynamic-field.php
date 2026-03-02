@@ -43,7 +43,7 @@ if ( ! class_exists( DynamicField::class ) ) :
 					'methods'             => 'GET',
 					'callback'            => [ $this, 'get_dynamic_field' ],
 					'permission_callback' => function () {
-						return current_user_can( 'edit_posts' );
+						return current_user_can( 'edit_others_posts' );
 					},
 				)
 			);
@@ -67,7 +67,7 @@ if ( ! class_exists( DynamicField::class ) ) :
 				setup_postdata( $post );
 			}
 
-			$context    = $request->get_param( 'context' );
+			$context    = $request->get_param( 'context' ) ?? [];
 			$attributes = $request->get_param( 'attributes' );
 
 			$attributes['fetchRawValue'] = true;

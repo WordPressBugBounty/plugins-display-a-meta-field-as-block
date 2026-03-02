@@ -6,7 +6,7 @@
  * Description:       Display a custom field as a block on the frontend. Supports custom fields for posts, terms, and users. Officially supports ACF, Meta Box, and all text-based meta fields.
  * Requires at least: 6.9
  * Requires PHP:      7.4
- * Version:           1.5.0
+ * Version:           1.5.2
  * Author:            Phi Phan
  * Author URI:        https://metafieldblock.com?utm_source=MFB&utm_campaign=MFB+visit+site&utm_medium=link&utm_content=Author+URI
  * License:           GPL-3.0
@@ -35,7 +35,7 @@ if ( !class_exists( MetaFieldBlock::class ) ) {
          *
          * @var String
          */
-        protected $version = '1.5.0';
+        protected $version = '1.5.2';
 
         /**
          * Components
@@ -112,6 +112,7 @@ if ( !class_exists( MetaFieldBlock::class ) ) {
             // Load & register core components.
             $components = [
                 'includes/loop-context.php'    => LoopContext::class,
+                'includes/meta-visibility.php' => MetaVisibility::class,
                 'includes/rest-fields.php'     => RestFields::class,
                 'includes/acf-fields.php'      => ACFFields::class,
                 'includes/mb-fields.php'       => MBFields::class,
@@ -327,9 +328,8 @@ if ( !class_exists( MetaFieldBlock::class ) ) {
          */
         public function get_object_id( $object_type, $attributes, $block ) {
             if ( in_array( $object_type, ['post', 'term', 'user'], true ) && ($attributes['isCustomSource'] ?? false) && ($attributes['objectId'] ?? false) ) {
-                return $attributes['objectId'];
-            }
-            if ( in_array( $object_type, ['term', 'user'], true ) ) {
+                $object_id = $attributes['objectId'];
+            } elseif ( in_array( $object_type, ['term', 'user'], true ) ) {
                 if ( 'term' === $object_type && isset( $block->context['termId'] ) ) {
                     // Get value from the context.
                     $object_id = $block->context['termId'];

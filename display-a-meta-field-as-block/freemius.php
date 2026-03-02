@@ -40,17 +40,18 @@ if ( !function_exists( 'mfb_fs' ) ) {
                 ),
             );
             $mfb_fs = fs_dynamic_init( array(
-                'id'             => '14507',
-                'slug'           => 'display-a-meta-field-as-block',
-                'type'           => 'plugin',
-                'public_key'     => 'pk_b9783b047cc4acfa426420f8ed37d',
-                'is_premium'     => false,
-                'premium_suffix' => 'Premium',
-                'has_addons'     => false,
-                'has_paid_plans' => true,
-                'navigation'     => 'tabs',
-                'menu'           => $menu,
-                'is_live'        => true,
+                'id'               => '14507',
+                'slug'             => 'display-a-meta-field-as-block',
+                'type'             => 'plugin',
+                'public_key'       => 'pk_b9783b047cc4acfa426420f8ed37d',
+                'is_premium'       => false,
+                'premium_suffix'   => 'Premium',
+                'has_addons'       => false,
+                'has_paid_plans'   => true,
+                'navigation'       => 'tabs',
+                'menu'             => $menu,
+                'is_live'          => true,
+                'is_org_compliant' => true,
             ) );
         }
         return $mfb_fs;
@@ -116,4 +117,18 @@ if ( !function_exists( 'mfb_fs_custom_connect_message_on_update' ) ) {
         10,
         6
     );
+}
+if ( !function_exists( 'mfb_uninstall_cleanup' ) ) {
+    /**
+     * Clean up the plugin data
+     *
+     * @return void
+     */
+    function mfb_uninstall_cleanup() {
+        // Delete options.
+        delete_option( 'mfb_current_version' );
+        delete_option( 'mfb_enable_strict_mode' );
+    }
+
+    mfb_fs()->add_action( 'after_uninstall', __NAMESPACE__ . '\\mfb_uninstall_cleanup' );
 }

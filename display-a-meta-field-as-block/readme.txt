@@ -4,8 +4,8 @@ Donate link:       https://metafieldblock.com/pro?utm_source=wp.org&utm_campaign
 Tags:              custom field, meta field, ACF block, block, ACF field
 Requires PHP:      7.4
 Requires at least: 6.9
-Tested up to:      6.9
-Stable tag:        1.5.0
+Tested up to:      7.0
+Stable tag:        1.5.2
 License:           GPL-3.0
 License URI:       https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -430,6 +430,20 @@ If you don't want to sanitize the content at all, use this hook `apply_filters( 
 4. Enable `Show in REST API` ACF setting
 
 == Changelog ==
+
+= 1.5.2 =
+*Release Date - 02 March 2026*
+
+* Added    - New "Enable Strict Mode" setting. When enabled, only custom fields exposed via the REST API can be displayed on the frontend
+* Security - Restricted access to private user custom fields and core settings fields to Administrators only. Private custom fields for posts and terms are validated against their respective capabilities.
+* Improved - Updated UI settings styling to better match the WordPress 7.0 design
+* Improved - (MFB Pro) Added a "Fill Available Width" option to the Repeater row layout, allowing items to either stretch to fill the full width or keep their natural size
+
+= 1.5.1 =
+*Release Date - 19 January 2026*
+
+* Fixed – (MFB Pro) Bound blocks were not displayed in the pattern preview
+* Fixed – (MFB Pro) Context data was not available when using a block inside a pattern
 
 = 1.5.0 =
 *Release Date - 15 January 2026*

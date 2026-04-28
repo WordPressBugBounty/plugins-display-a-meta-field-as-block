@@ -1,19 +1,19 @@
-=== Meta Field Block ===
+=== Meta Field Block - Display custom fields in the Block Editor without coding ===
 Contributors: Mr2P, freemius
 Donate link:       https://metafieldblock.com/pro?utm_source=wp.org&utm_campaign=readme&utm_medium=link&utm_content=MFB+Donate
 Tags:              custom field, meta field, ACF block, block, ACF field
-Requires PHP:      7.4
+Requires PHP:      8.0
 Requires at least: 6.9
 Tested up to:      7.0
-Stable tag:        1.5.2
+Stable tag:        1.5.3
 License:           GPL-3.0
 License URI:       https://www.gnu.org/licenses/gpl-3.0.html
 
-Display a custom field as a block on the frontend. Supports custom fields for posts, terms, and users. Officially supports ACF, Meta Box.
+A single block to display custom fields in the Block Editor. It supports ACF, MetaBox, WooCommerce, meta, rest field, shortcode and more.
 
 == Description ==
 
-This single-block plugin allows you to display a meta field or a custom field as a block on the front end. It supports custom fields for posts, terms, and users. It can be nested inside a parent block that has `postId` and `postType` context, such as `Query Block`, `WooCommerce Product Collection`, or used as a stand-alone block.
+This single-block plugin allows you to display custom fields, shortcode as blocks in the Block Editor. It supports custom fields for posts, terms, and users. It can be nested inside a parent block that has `postId` and `postType` context, such as `Query Loop`, `WooCommerce Product Collection`, `Term Query`, or used as a stand-alone block.
 
 You can display any field whose value can be retrieved by the core API ([get_post_meta](https://developer.wordpress.org/reference/functions/get_post_meta/), [get_term_meta](https://developer.wordpress.org/reference/functions/get_term_meta/), [get_user_meta](https://developer.wordpress.org/reference/functions/get_user_meta/)) and is a string or can be converted to a string. To display the field value in the Block Editor, it has to be accessible via the REST API or have the field type set to `dynamic`.
 
@@ -343,9 +343,11 @@ The main features of MFB PRO are:
 * Display the ACF Gallery field as an image gallery using [grid, masonry, or carousel layouts](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-gallery-fields-as-grid-masonry-carousel).
 * [Display the ACF File field as a video block, an image block, a button block, or a link](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-file-fields).
 * Display the ACF Link field as a button block.
-* [Display the ACF URL field as an image block, a button block, or a link](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-url-fields).
+* Display the ACF URL field as [an image block, a button block, a link](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-url-fields), a video block, or an embed block.
 * [Display the ACF Email field as a button block or a link](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-email-fields).
+* Display the ACF oEmbed field as an embed block.
 * Display the ACF Google Map field.
+* All Meta Box field types that correspond to ACF field types support the same Pro features as ACF.
 * Display the Meta Box Group field, similar to the ACF Group field.
 * Display the Meta Box Cloneable Group field as a repeater block, similar to the ACF Repeater field. Supports row, stack, grid or carousel layouts.
 * Display the Meta Box Post field as a Query Loop.
@@ -356,6 +358,10 @@ The main features of MFB PRO are:
 * [Display custom fields from a specific post, term or user](https://metafieldblock.com/how-to-display-wordpress-custom-fields/?video=display-acf-custom-fields-from-other-post).
 * Display a taxonomy field as a Terms Query block.
 * Display a repeater or cloned group field as an core/accordion block.
+
+Since version 1.5.3, MFB Pro allows you to bind custom fields (ACF, Meta Box, core meta fields, and core settings) directly to core blocks (Heading, Paragraph, Button, Image, Video, and Embed).
+
+For more complex field types (Group, Repeater, Flexible Content), you can use MFB Pro to display the group as a container. Nested fields can then be displayed using the Sub Field Block, as before, or bound directly to core blocks.
 
 If this plugin is useful for you, please do a quick review and [rate it](https://wordpress.org/support/plugin/display-a-meta-field-as-block/reviews/#new-post) on WordPress.org to help us spread the word. I would very much appreciate it.
 
@@ -430,6 +436,17 @@ If you don't want to sanitize the content at all, use this hook `apply_filters( 
 4. Enable `Show in REST API` ACF setting
 
 == Changelog ==
+
+= 1.5.3 =
+*Release Date - 28 April 2026*
+
+* Added    - Support for width and height in WordPress 7.0
+* Added    - (MFB Pro) Render oEmbed fields as core/embed blocks
+* Added    - (MFB Pro) Render URL fields as video or embed blocks
+* Added    - (MFB Pro) Allow direct binding of core blocks to custom fields without using the MFB block (supports Heading, Paragraph, Button, Image, Video, and Embed blocks)
+* Fixed    - (MFB Pro) Error when displaying a gallery as a carousel
+* Improved - Updated setting controls for compatibility with WordPress 7.0
+* Security - Properly sanitized the tagName attribute; only valid tags are alllowed
 
 = 1.5.2 =
 *Release Date - 02 March 2026*
@@ -789,4 +806,3 @@ If you don't want to sanitize the content at all, use this hook `apply_filters( 
 
 = 1.0.0 =
 *Release Date - 22 February 2022*
-

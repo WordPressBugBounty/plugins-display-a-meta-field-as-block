@@ -200,7 +200,10 @@ if ( ! function_exists( __NAMESPACE__ . '\meta_field_block_get_block_wrapper' ) 
 			}
 		}
 
-		return sprintf( '<%3$s %1$s>%2$s</%3$s>', $wrapper_attributes, $content, esc_attr( $attributes['tagName'] ?? 'div' ) );
+		$valid_tag_names = [ 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'span', 'p', 'header', 'footer', 'section' ];
+		$tag_name        = in_array( $attributes['tagName'] ?? '', $valid_tag_names, true ) ? $attributes['tagName'] : 'div';
+
+		return sprintf( '<%3$s %1$s>%2$s</%3$s>', $wrapper_attributes, $content, $tag_name );
 	}
 endif;
 

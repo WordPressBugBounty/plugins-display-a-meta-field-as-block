@@ -189,6 +189,9 @@ if ( ! class_exists( MBFields::class ) ) :
 			// Update label.
 			$field['label'] = $field['name'] ?? '';
 
+			// Allow changing the raw value.
+			$value = apply_filters( '_meta_field_block_mb_refine_field_value', $value, $field, $object_id );
+
 			return $value;
 		}
 
@@ -602,20 +605,53 @@ if ( ! class_exists( MBFields::class ) ) :
 
 			$field_value = array_map(
 				function ( $video ) {
-					$poster = $video['image']['src'] ?? '';
-					if ( $poster === wp_mime_type_icon( $video['ID'] ) ) {
+					if ( ! isset( $video['ID'] ) ) {
+						return '';
+					}
+
+					// Video attributes.
+					$video_attrs = [
+						'src' => $video['src'] ?? $video['url'],
+					];
+
+					// Get poster.
+					$poster = ! empty( $video['poster'] ) ? $video['poster'] : $video['image']['src'] ?? '';
+					if ( $poster === wp_mime_type_icon( $video['ID'] ?? 0 ) ) {
 						// Not the default icon.
 						$poster = '';
 					}
-					return "<video controls preload=\"metadata\" src=\"{$video['src']}\" width=\"{$video['dimensions']['width']}\" poster=\"{$poster}\" />";
+
+					if ( ! empty( $poster ) ) {
+						$video_attrs['poster'] = $poster;
+					}
+
+					// Width & height dimensions.
+					if ( ! empty( $video['dimensions']['width'] ) && ! empty( $video['dimensions']['height'] ) ) {
+						$video_attrs['width']  = $video['dimensions']['width'];
+						$video_attrs['height'] = $video['dimensions']['height'];
+					}
+
+					$video_attrs_string = implode(
+						' ',
+						array_map(
+							fn( $key, $value ) => $key . '="' . esc_attr( $value ) . '"',
+							array_keys( $video_attrs ),
+							$video_attrs
+						)
+					);
+
+					return "<video controls preload=\"metadata\" {$video_attrs_string} />";
 				},
 				array_values( $field_value )
 			);
 
+			// Remove empty values.
+			$field_value = array_filter( $field_value );
+
 			if ( count( $field_value ) > 1 ) {
 				$field_value = '<figure class="video-list"><figure class="video-item">' . implode( '</figure><figure class="video-item">', $field_value ) . '</figure></figure>';
 			} else {
-				$field_value = $field_value[0];
+				$field_value = count( $field_value ) > 0 ? reset( $field_value ) : '';
 			}
 
 			return $field_value;

@@ -86,6 +86,14 @@
         "padding": true
       }
     },
+    "dimensions": {
+      "width": true,
+      "height": true,
+      "__experimentalDefaultControls": {
+        "width": false,
+        "height": false
+      }
+    },
     "__experimentalBorder": {
       "color": true,
       "radius": true,

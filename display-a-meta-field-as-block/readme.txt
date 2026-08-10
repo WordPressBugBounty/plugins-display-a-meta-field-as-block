@@ -4,8 +4,8 @@ Donate link:       https://metafieldblock.com/pro?utm_source=wp.org&utm_campaign
 Tags:              custom field, meta field, ACF block, block, ACF field
 Requires PHP:      8.0
 Requires at least: 6.9
-Tested up to:      7.0
-Stable tag:        1.5.3
+Tested up to:      7.1
+Stable tag:        1.5.4
 License:           GPL-3.0
 License URI:       https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -359,7 +359,7 @@ The main features of MFB PRO are:
 * Display a taxonomy field as a Terms Query block.
 * Display a repeater or cloned group field as an core/accordion block.
 
-Since version 1.5.3, MFB Pro allows you to bind custom fields (ACF, Meta Box, core meta fields, and core settings) directly to core blocks (Heading, Paragraph, Button, Image, Video, and Embed).
+**Since version 1.5.3, MFB Pro allows you to bind custom fields (ACF, Meta Box, core meta fields, and core settings) directly to core blocks (Heading, Paragraph, Button, Image, Video, Embed, and the background image/video/embed of Cover block).**
 
 For more complex field types (Group, Repeater, Flexible Content), you can use MFB Pro to display the group as a container. Nested fields can then be displayed using the Sub Field Block, as before, or bound directly to core blocks.
 
@@ -367,7 +367,7 @@ If this plugin is useful for you, please do a quick review and [rate it](https:/
 
 Please check out my other plugins if you're interested:
 
-- **[Content Blocks Builder](https://wordpress.org/plugins/content-blocks-builder)** - This plugin turns the Block Editor into a powerful page builder by allowing you to create blocks, variations, and patterns directly in the Block Editor without needing a code editor.
+- **[Content Blocks Builder](https://wordpress.org/plugins/content-blocks-builder)** - Build custom layouts and blocks visually in the Block Editor without needing a code editor, using only core blocks and native Gutenberg features.
 - **[SVG Block](https://wordpress.org/plugins/svg-block)** - A block to display SVG images as blocks. Useful for images, icons, dividers, and buttons. It allows you to upload SVG images and load them into the icon library.
 - **[Icon separator](https://wordpress.org/plugins/icon-separator)** - A tiny block just like the core/separator block but with the ability to add an icon.
 - **[Breadcrumb Block](https://wordpress.org/plugins/breadcrumb-block)** - A simple breadcrumb trail block that supports JSON-LD structured data and is compatible with WooCommerce.
@@ -436,6 +436,16 @@ If you don't want to sanitize the content at all, use this hook `apply_filters( 
 4. Enable `Show in REST API` ACF setting
 
 == Changelog ==
+
+= 1.5.4 =
+*Release Date - 10 August 2026*
+
+* Improved - Refactored the list of allowed HTML tags and attributes
+* Added    - (MFB Pro) Added direct binding of URL, image, video, and embed fields to the Cover block background
+* Fixed    - (MFB Pro) Fixed a conflict between carousel bullet styles and WordPress 7.0 border styles
+* Improved - (MFB Pro) Sanitized custom next/prev icons for carousel navigation buttons
+* Improved - (MFB Pro) Added navigation buttons to the gallery lightbox
+* Improved - (MFB Pro) Added captions to gallery images
 
 = 1.5.3 =
 *Release Date - 28 April 2026*

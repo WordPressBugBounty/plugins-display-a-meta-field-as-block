@@ -207,33 +207,13 @@ if ( ! function_exists( __NAMESPACE__ . '\meta_field_block_get_block_wrapper' ) 
 	}
 endif;
 
-if ( ! function_exists( __NAMESPACE__ . '\meta_field_block_get_allowed_html_tags' ) ) :
+if ( ! function_exists( __NAMESPACE__ . '\meta_field_block_get_allowed_svg_tags' ) ) :
 	/**
-	 * Get allowed html tags
+	 * Get allowed svg tags
 	 *
-	 * @return array Returns the array of allowed html tags.
+	 * @return array Returns the array of allowed svg tags.
 	 */
-	function meta_field_block_get_allowed_html_tags() {
-		// Build allowed html tags from $allowedposttags .
-		$allowed_html_tags = wp_kses_allowed_html( 'post' );
-
-		// Allow displaying iframe.
-		$allowed_html_tags['iframe'] = [
-			'src'             => true,
-			'srcdoc'          => true,
-			'id'              => true,
-			'name'            => true,
-			'width'           => true,
-			'height'          => true,
-			'title'           => true,
-			'loading'         => true,
-			'allow'           => true,
-			'allowfullscreen' => true,
-			'frameborder'     => true,
-			'class'           => true,
-			'style'           => true,
-		];
-
+	function meta_field_block_get_allowed_svg_tags() {
 		// SVG.
 		$svg_core_attributes = [
 			'id'       => true,
@@ -271,7 +251,7 @@ if ( ! function_exists( __NAMESPACE__ . '\meta_field_block_get_allowed_html_tags
 		];
 
 		// Allow common attributes of SVG images.
-		$allowed_html_tags['svg'] = array_merge(
+		$allowed_svg_tags['svg'] = array_merge(
 			[
 				'viewbox'             => true,
 				'xmlns'               => true,
@@ -290,33 +270,33 @@ if ( ! function_exists( __NAMESPACE__ . '\meta_field_block_get_allowed_html_tags
 			$svg_presentation_attributes
 		);
 
-		$allowed_html_tags['g'] = array_merge(
+		$allowed_svg_tags['g'] = array_merge(
 			$svg_core_attributes,
 			$svg_presentation_attributes
 		);
 
-		$allowed_html_tags['path'] = array_merge(
+		$allowed_svg_tags['path'] = array_merge(
 			[
 				'd'          => true,
-				'pathLength' => true,
+				'pathlength' => true,
 			],
 			$svg_core_attributes,
 			$svg_presentation_attributes
 		);
 
-		$allowed_html_tags['line'] = array_merge(
+		$allowed_svg_tags['line'] = array_merge(
 			[
 				'x1'         => true,
 				'y1'         => true,
 				'x2'         => true,
 				'y2'         => true,
-				'pathLength' => true,
+				'pathlength' => true,
 			],
 			$svg_core_attributes,
 			$svg_presentation_attributes
 		);
 
-		$allowed_html_tags['rect'] = array_merge(
+		$allowed_svg_tags['rect'] = array_merge(
 			[
 				'x'          => true,
 				'y'          => true,
@@ -324,69 +304,103 @@ if ( ! function_exists( __NAMESPACE__ . '\meta_field_block_get_allowed_html_tags
 				'ry'         => true,
 				'width'      => true,
 				'height'     => true,
-				'pathLength' => true,
+				'pathlength' => true,
 			],
 			$svg_core_attributes,
 			$svg_presentation_attributes
 		);
 
-		$allowed_html_tags['circle'] = array_merge(
+		$allowed_svg_tags['circle'] = array_merge(
 			[
 				'cx'         => true,
 				'cy'         => true,
 				'r'          => true,
-				'pathLength' => true,
+				'pathlength' => true,
 			],
 			$svg_core_attributes,
 			$svg_presentation_attributes
 		);
 
-		$allowed_html_tags['ellipse'] = array_merge(
+		$allowed_svg_tags['ellipse'] = array_merge(
 			[
 				'cx'         => true,
 				'cy'         => true,
 				'rx'         => true,
 				'ry'         => true,
-				'pathLength' => true,
+				'pathlength' => true,
 			],
 			$svg_core_attributes,
 			$svg_presentation_attributes
 		);
 
-		$allowed_html_tags['polygon'] = array_merge(
+		$allowed_svg_tags['polygon'] = array_merge(
 			[
 				'points'     => true,
-				'pathLength' => true,
+				'pathlength' => true,
 			],
 			$svg_core_attributes,
 			$svg_presentation_attributes
 		);
 
-		$allowed_html_tags['polyline'] = array_merge(
+		$allowed_svg_tags['polyline'] = array_merge(
 			[
 				'points'     => true,
-				'pathLength' => true,
+				'pathlength' => true,
 			],
 			$svg_core_attributes,
 			$svg_presentation_attributes
 		);
 
-		$allowed_html_tags['text'] = array_merge(
+		$allowed_svg_tags['text'] = array_merge(
 			[
 				'x'            => true,
 				'y'            => true,
 				'dx'           => true,
 				'dy'           => true,
 				'rotate'       => true,
-				'lengthAdjust' => true,
-				'textLength'   => true,
+				'lengthadjust' => true,
+				'textlength'   => true,
 			],
 			$svg_core_attributes,
 			$svg_presentation_attributes
 		);
 
+		return $allowed_svg_tags;
+	}
+endif;
+
+if ( ! function_exists( __NAMESPACE__ . '\meta_field_block_get_allowed_html_tags' ) ) :
+	/**
+	 * Get allowed html tags
+	 *
+	 * @return array Returns the array of allowed html tags.
+	 */
+	function meta_field_block_get_allowed_html_tags() {
+		// Build allowed html tags from $allowedposttags .
+		$allowed_html_tags = wp_kses_allowed_html( 'post' );
+
+		// Allow displaying iframe.
+		$allowed_html_tags['iframe'] = [
+			'src'             => true,
+			'srcdoc'          => true,
+			'id'              => true,
+			'name'            => true,
+			'width'           => true,
+			'height'          => true,
+			'title'           => true,
+			'loading'         => true,
+			'allow'           => true,
+			'allowfullscreen' => true,
+			'frameborder'     => true,
+			'class'           => true,
+			'style'           => true,
+		];
+
+		// SVG.
+		$allowed_svg_tags = meta_field_block_get_allowed_svg_tags();
+
 		// Allow third-party to change it.
-		return apply_filters( 'meta_field_block_kses_allowed_html', $allowed_html_tags );
+		return apply_filters( 'meta_field_block_kses_allowed_html', array_merge( $allowed_html_tags, $allowed_svg_tags ) );
 	}
 endif;
 

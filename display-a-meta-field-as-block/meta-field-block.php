@@ -6,7 +6,7 @@
  * Description:       A single block to display custom fields in the Block Editor. It supports ACF, MetaBox, WooCommerce, meta, rest field, shortcode and more.
  * Requires at least: 6.9
  * Requires PHP:      8.0
- * Version:           1.5.4
+ * Version:           1.6.0
  * Author:            Phi Phan
  * Author URI:        https://metafieldblock.com?utm_source=MFB&utm_campaign=MFB+visit+site&utm_medium=link&utm_content=Author+URI
  * License:           GPL-3.0
@@ -35,7 +35,7 @@ if ( !class_exists( MetaFieldBlock::class ) ) {
          *
          * @var String
          */
-        protected $version = '1.5.4';
+        protected $version = '1.6.0';
 
         /**
          * Components

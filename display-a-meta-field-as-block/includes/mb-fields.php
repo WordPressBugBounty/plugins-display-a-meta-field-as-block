@@ -124,20 +124,19 @@ if ( ! class_exists( MBFields::class ) ) :
 		/**
 		 * Get rest value for metabox
 		 *
-		 * @param array           $object
-		 * @param string          $key
-		 * @param WP_REST_Request $request
+		 * @param array            $data
+		 * @param string           $key
+		 * @param \WP_REST_Request $request
 		 * @return array
 		 */
-		public function get_rest_field( $object, $key, $request ) {
+		public function get_rest_field( $data, $key, $request ) {
 			$values = [];
 			if ( ! function_exists( 'rwmb_get_value' ) ) {
 				return $values;
 			}
 
-			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
-			$object_type = apply_filters( '_meta_field_block_mb_field_get_rest_object_type', 'post', $request, $object );
-			$object_id   = $object['id'] ?? 0;
+			$object_type = $this->the_plugin_instance->get_component( RestFields::class )->get_rest_object_type( $data, $request );
+			$object_id   = $data['id'] ?? 0;
 
 			return $this->get_rest_values( $object_id, $object_type );
 		}
@@ -255,9 +254,8 @@ if ( ! class_exists( MBFields::class ) ) :
 		 * @param array      $field The field array.
 		 * @param mixed      $raw_value The raw value.
 		 * @param array      $args The additional arguments.
-		 * @param string     $format The format applied to the field value.
 		 *
-		 * @return mixed
+		 * @return array
 		 */
 		public function format_value_for_rest( $value_formatted, $post_id, $field, $raw_value, $args ) {
 			$simple_value_formatted = $this->render_field( $value_formatted, $post_id, $field, $raw_value, $args['object_type'] ?? '', $args );
@@ -354,7 +352,7 @@ if ( ! class_exists( MBFields::class ) ) :
 		 * @param string $object_type
 		 * @param array  $args
 		 *
-		 * @return void
+		 * @return string
 		 */
 		public function render_field( $value, $object_id, $field, $raw_value, $object_type = '', $args = [] ) {
 			// Get the value for rendering.

@@ -4,7 +4,7 @@
   "name": "mfb/meta-field-block",
   "title": "Meta Field Block",
   "category": "theme",
-  "description": "Display custom fields in the Block Editor without coding. It supports ACF, MetaBox, WooCommerce, meta, rest field, shortcode and more.",
+  "description": "Display custom fields in the Block Editor. It supports ACF, MetaBox, WooCommerce, meta, rest field, shortcode and more.",
   "keywords": [
     "meta",
     "custom",

@@ -18,6 +18,13 @@ if ( ! class_exists( ACFFields::class ) ) :
 	 */
 	class ACFFields extends CoreComponent {
 		/**
+		 * Detect if the current request is for mfb
+		 *
+		 * @var array
+		 */
+		private $rest_types = [];
+
+		/**
 		 * Run main hooks
 		 *
 		 * @return void
@@ -25,6 +32,9 @@ if ( ! class_exists( ACFFields::class ) ) :
 		public function run() {
 			// Get block content.
 			add_filter( '_meta_field_block_get_block_content_by_provider', [ $this, 'get_block_content' ], 10, 7 );
+
+			// Register custom rest fields.
+			add_action( 'rest_api_init', [ $this, 'register_rest_field' ], 20 );
 
 			// Don't format fields for rest.
 			add_filter( 'acf/settings/rest_api_format', [ $this, 'api_format' ] );
@@ -39,13 +49,13 @@ if ( ! class_exists( ACFFields::class ) ) :
 		/**
 		 * Get the block content for the field
 		 *
-		 * @param string   $content
-		 * @param string   $field_name
-		 * @param string   $field_type
-		 * @param mixed    $object_id
-		 * @param string   $object_type
-		 * @param array    $attributes
-		 * @param WP_Block $block
+		 * @param string    $content
+		 * @param string    $field_name
+		 * @param string    $field_type
+		 * @param mixed     $object_id
+		 * @param string    $object_type
+		 * @param array     $attributes
+		 * @param \WP_Block $block
 		 *
 		 * @return mixed
 		 */
@@ -67,6 +77,192 @@ if ( ! class_exists( ACFFields::class ) ) :
 		}
 
 		/**
+		 * Register custom rest field
+		 *
+		 * @return void
+		 */
+		public function register_rest_field() {
+			$object_types = $this->the_plugin_instance->get_component( RestFields::class )->load_public_object_types();
+			if ( ! class_exists( \ACF_Rest_Request::class ) ) {
+				return;
+			}
+
+			if ( $object_types ) {
+				register_rest_field(
+					$object_types,
+					'mfb_acf',
+					[
+						'get_callback' => [ $this, 'get_rest_field' ],
+						'schema'       => array(
+							'type' => 'array',
+						),
+					]
+				);
+			}
+		}
+
+		/**
+		 * Get callback for the REST field
+		 *
+		 * @param array            $data     An array representation of the post, term, or user object.
+		 * @param string           $key
+		 * @param \WP_REST_Request $request
+		 * @param string           $object_sub_type
+
+		 * @return array
+		 */
+		public function get_rest_field( $data, $key, $request, $object_sub_type ) {
+			global $wp_rest_additional_fields;
+
+			$get_callback = $wp_rest_additional_fields[ $object_sub_type ]['acf']['get_callback'] ?? null;
+			if ( empty( $get_callback ) ) {
+				$get_callback = [ $this, 'load_fields' ];
+			}
+
+			$this->set_rest_type( 'mfb_acf' );
+			$fields = $get_callback( $data, $key, $request, $object_sub_type );
+			$this->set_rest_type( 'mfb_acf', true );
+
+			return $fields;
+		}
+
+		/**
+		 * Load rest value for the REST field
+		 *
+		 * @param array            $data     An array representation of the post, term, or user object.
+		 * @param string           $key
+		 * @param \WP_REST_Request $request
+		 * @param string           $object_sub_type
+
+		 * @return array
+		 */
+		public function load_fields( $data, $key, $request, $object_sub_type ) {
+			$fields = [];
+
+			// Object Id.
+			$object_id = $data['id'] ?? 0;
+
+			// Parse the current request.
+			$acf_request = new \ACF_Rest_Request();
+			$acf_request->parse_request( $request );
+
+			// Get the object type.
+			$object_type = $acf_request->object_type;
+
+			if ( empty( $object_id ) || empty( $object_type ) ) {
+				return $fields;
+			}
+
+			$object_sub_type = str_replace( '-revision', '', $object_sub_type );
+
+			// Get all field groups for the current object.
+			$field_groups = $this->get_field_groups_by_id( $object_id, $object_type, $object_sub_type, $acf_request );
+			if ( empty( $field_groups ) ) {
+				return $fields;
+			}
+
+			// Determine the ACF ID string for the current object.
+			$post_id = $this->get_acf_object_id( $object_id, $object_type );
+
+			// Loop through the fields within all applicable field groups and add the fields to the response.
+			foreach ( $field_groups as $field_group ) {
+				// Get all fields for this field group that are rest enabled.
+				$acf_fields = array_filter(
+					acf_get_fields( $field_group ),
+					function ( $field ) {
+						$field_type = acf_get_field_type( $field['type'] );
+						return isset( $field_type->show_in_rest ) && $field_type->show_in_rest;
+					}
+				);
+
+				foreach ( $acf_fields as $field ) {
+					$value = acf_get_value( $post_id, $field );
+
+					// Format the field value according to the request params.
+					$format                   = $request->get_param( 'acf_format' ) ?: acf_get_setting( 'rest_api_format' );
+					$value                    = acf_format_value_for_rest( $value, $post_id, $field, $format );
+					$fields[ $field['name'] ] = $value;
+				}
+			}
+
+			return $fields;
+		}
+
+		/**
+		 * Get all field groups for a given object.
+		 *
+		 * @param integer           $object_id
+		 * @param string            $object_type     'user', 'term', or 'post'
+		 * @param string|null       $object_sub_type The post type or taxonomy. When an $object_type of 'user' is in play, this can be ignored.
+		 * @param \ACF_Rest_Request $acf_request
+		 *
+		 * @return array An array of matching field groups.
+		 */
+		private function get_field_groups_by_id( $object_id, $object_type, $object_sub_type, $acf_request ) {
+			// When dealing with a term, we need the taxonomy in order to look up the relevant field groups.
+			// The taxonomy is expected in the $object_sub_type variable but when building our schema, this isn't readily available.
+			// This block ensures the taxonomy is set when not passed in.
+			if ( 'term' === $object_type && null === $object_sub_type ) {
+				$term = get_term( $object_id );
+				if ( ! $term instanceof \WP_Term ) {
+					return [];
+				}
+
+				$object_sub_type = $term->taxonomy;
+			}
+
+			switch ( $object_type ) {
+				case 'user':
+					$args = [
+						'user_id' => $object_id,
+						'rest'    => true,
+					];
+					break;
+				case 'term':
+					$args = [ 'taxonomy' => $object_sub_type ];
+					break;
+				case 'comment':
+					$comment   = get_comment( $object_id );
+					$post_type = get_post_type( $comment->comment_post_ID );
+					$args      = [ 'comment' => $post_type ];
+					break;
+				case 'post':
+				default:
+					$args            = [ 'post_id' => $object_id ];
+					$child_rest_base = $acf_request->get_url_param( 'child_rest_base' );
+					if ( $child_rest_base && 'post' === $object_type ) {
+						$args['post_type'] = $object_sub_type;
+					}
+			}
+
+			// Only return field groups that are configured to show in REST.
+			return array_filter(
+				acf_get_field_groups( $args ),
+				function ( $group ) {
+					return $group['show_in_rest'];
+				}
+			);
+		}
+
+		/**
+		 * Get the ACF object id
+		 *
+		 * @param int    $object_id
+		 * @param string $object_type
+		 *
+		 * @return int|string
+		 */
+		private function get_acf_object_id( $object_id, $object_type ) {
+			$formats = array(
+				'user'    => 'user_%s',
+				'term'    => 'term_%s',
+				'comment' => 'comment_%s',
+			);
+
+			return isset( $formats[ $object_type ] ) ? sprintf( $formats[ $object_type ], $object_id ) : $object_id;
+		}
+
+		/**
 		 * Don't format fields for rest by default
 		 *
 		 * @return string
@@ -82,25 +278,26 @@ if ( ! class_exists( ACFFields::class ) ) :
 		 * @param string|int $post_id The post ID of the current object.
 		 * @param array      $field The field array.
 		 * @param mixed      $raw_value The raw/unformatted value.
-		 * @param string     $format The format applied to the field value.
 		 *
 		 * @return mixed
 		 */
 		public function format_value_for_rest( $value_formatted, $post_id, $field, $raw_value ) {
-			$simple_value_formatted = $this->render_field( $value_formatted, $post_id, $field, $raw_value );
+			if ( apply_filters( '_meta_field_block_is_mfb_acf_request', (bool) $this->rest_types ) ) {
+				$simple_value_formatted = $this->render_field( $value_formatted, $post_id, $field, $raw_value );
 
-			$rest_formatted_value = [
-				'simple_value_formatted' => $simple_value_formatted,
-				'value_formatted'        => $value_formatted,
-				'value'                  => $raw_value,
-				'field'                  => $field,
-			];
+				return apply_filters(
+					'meta_field_block_acf_field_format_value_for_rest',
+					[
+						'simple_value_formatted' => $simple_value_formatted,
+						'value_formatted'        => $value_formatted,
+						'value'                  => $raw_value,
+						'field'                  => $field,
+					],
+					$post_id
+				);
+			}
 
-			return apply_filters(
-				'meta_field_block_acf_field_format_value_for_rest',
-				$rest_formatted_value,
-				$post_id
-			);
+			return $value_formatted;
 		}
 
 		/**
@@ -326,7 +523,7 @@ if ( ! class_exists( ACFFields::class ) ) :
 		 * @param string $object_type
 		 * @param array  $args
 		 *
-		 * @return void
+		 * @return string
 		 */
 		public function render_field( $value, $object_id, $field, $raw_value, $object_type = '', $args = [] ) {
 			// Get the value for rendering.
@@ -952,6 +1149,29 @@ if ( ! class_exists( ACFFields::class ) ) :
 			if ( 'acf-field-group' === $post->post_type ) {
 				wp_cache_delete( 'field_key', 'mfb' );
 				wp_cache_delete( 'get_all_acf_fields', 'mfb' );
+			}
+		}
+
+		/**
+		 * Update the type of current request
+		 *
+		 * @param string  $type
+		 * @param boolean $is_remove
+		 * @return void
+		 */
+		public function set_rest_type( $type, $is_remove = false ) {
+			$supported_types = [ 'mfb_acf', 'acf_key', 'settings' ];
+
+			if ( ! in_array( $type, $supported_types, true ) ) {
+				return;
+			}
+
+			if ( $is_remove ) {
+				$this->rest_types = array_values(
+					array_diff( $this->rest_types, [ $type ] )
+				);
+			} elseif ( ! in_array( $type, $this->rest_types, true ) ) {
+				$this->rest_types[] = $type;
 			}
 		}
 	}

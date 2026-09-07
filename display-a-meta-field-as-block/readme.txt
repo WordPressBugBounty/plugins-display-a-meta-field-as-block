@@ -1,11 +1,11 @@
-=== Meta Field Block - Display custom fields in the Block Editor without coding ===
+=== Meta Field Block - Display Custom Fields for ACF, Meta Box and More ===
 Contributors: Mr2P, freemius
 Donate link:       https://metafieldblock.com/pro?utm_source=wp.org&utm_campaign=readme&utm_medium=link&utm_content=MFB+Donate
-Tags:              custom field, meta field, ACF block, block, ACF field
+Tags:              custom field, meta field, ACF, block, ACF field
 Requires PHP:      8.0
 Requires at least: 6.9
 Tested up to:      7.1
-Stable tag:        1.5.4
+Stable tag:        1.6.0
 License:           GPL-3.0
 License URI:       https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -436,6 +436,14 @@ If you don't want to sanitize the content at all, use this hook `apply_filters( 
 4. Enable `Show in REST API` ACF setting
 
 == Changelog ==
+
+= 1.6.0 =
+*Release Date - 07 September 2026*
+
+* Changed  - Registered a new REST field named mfb_acf instead of using the default acf REST field provided by ACF/SCF
+* Improved - (MFB Pro) Loaded preview values in the Editor when using an ACF field key as the field name
+* Fixed    - (MFB Pro) Fixed an issue where accordion items did not show their open state when the bound value was true
+* Fixed    - (MFB Pro) Fixed an issue where the gallery style was missing when displaying a multiple-image/gallery field as a Gallery block
 
 = 1.5.4 =
 *Release Date - 10 August 2026*

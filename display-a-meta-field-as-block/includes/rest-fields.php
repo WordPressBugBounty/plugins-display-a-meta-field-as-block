@@ -75,7 +75,7 @@ if ( ! class_exists( RestFields::class ) ) :
 							$field_names = array_filter(
 								array_keys( $wp_rest_additional_fields[ $object_type ] ),
 								function ( $key ) {
-									return ! in_array( $key, [ 'acf', 'meta_box', 'mb' ], true ); // Ignore acf, mb.
+									return ! in_array( $key, [ 'acf', 'mfb_acf', 'meta_box', 'mb' ], true ); // Ignore acf, mb.
 								}
 							);
 
@@ -153,6 +153,17 @@ if ( ! class_exists( RestFields::class ) ) :
 			return $post_types;
 		}
 
+		/**
+		 * Get the object of the request
+		 *
+		 * @param array            $data
+		 * @param \WP_REST_Request $request
+		 * @return string
+		 */
+		public function get_rest_object_type( $data, $request ) {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
+			return apply_filters( '_meta_field_block_get_rest_object_type', 'post', $request, $data );
+		}
 		/**
 		 * Get core post meta field values
 		 *

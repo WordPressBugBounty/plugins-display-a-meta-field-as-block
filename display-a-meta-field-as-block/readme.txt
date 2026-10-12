@@ -5,7 +5,7 @@ Tags:              custom field, meta field, ACF, block, ACF field
 Requires PHP:      8.0
 Requires at least: 6.9
 Tested up to:      7.1
-Stable tag:        1.6.0
+Stable tag:        1.6.1
 License:           GPL-3.0
 License URI:       https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -153,27 +153,9 @@ The HTML output of a custom field on the front end depends on the context of the
 
 6. Radio type - The output is the field value by default. To display label or change the separator, use the same hooks as the multi-choice types.
 
-7. Post type - The HTML output for a single-value field is:
+7. Post type - Similar to the ACF Post Object type
 
-        <a class="post-link" href={url} rel="bookmark">{title}</a>
-
-    For a multiple-value field is:
-
-        <ul>
-          <li><a class="post-link" href={url} rel="bookmark">{title}</a></li>
-          <li><a class="post-link" href={url} rel="bookmark">{title}</a></li>
-        </ul>
-
-8. Taxonomy, Taxonomy advanced type - The HTML output for a single-value field is:
-
-        <a class="term-link" href={term_url}>{term_name}</a>
-
-    For a multiple-value field is:
-
-        <ul>
-          <li><a class="term-link" href={term_url}>{term_name}</a></li>
-          <li><a class="term-link" href={term_url}>{term_name}</a></li>
-        </ul>
+8. Taxonomy, Taxonomy advanced type - Similar to the ACF Taxonomy type
 
 9. User type - Similar to ACF User type
 
@@ -436,6 +418,14 @@ If you don't want to sanitize the content at all, use this hook `apply_filters( 
 4. Enable `Show in REST API` ACF setting
 
 == Changelog ==
+
+= 1.6.1 =
+*Release Date - 12 October 2026*
+
+* Improved - Refactor JS helper functions
+* Improved - Small adjustment on the settings page
+* Improved - (MFB Pro) Loaded the preview value when selecting a field for block bindings
+* Improved - Updated Freemius SDK
 
 = 1.6.0 =
 *Release Date - 07 September 2026*
